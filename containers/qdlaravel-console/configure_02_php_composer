@@ -1,0 +1,47 @@
+#!/bin/bash -x
+
+#Pull in functions 
+source /root/bash-functions.sh
+
+export DEBIAN_FRONTEND=noninteractive
+
+#We trash the cache data in configure_99_cleanup
+evalcommand "apt update" 1
+
+#Install 
+evalcommand "apt install -y php-cli php-mysql php-bcmath php-json php-mbstring php-services-json php-tokenizer php-xml" 1
+
+PHPVER=$( apt list | egrep "^php[0-9]\.[0-9]\/" | sed -r 's/php([0-9]{1}\.[0-9]{1}).*/\1/g' )
+echo "${PHPVER}" > /root/php-version
+
+#Enable short tags
+sed -r -i 's/(short_open_tag\s?=\s?Off)/#Was \1\nshort_open_tag = on/i' /etc/php/*/*/php.ini
+
+#Install dependencies
+evalcommand "apt install -y git curl unzip" 1
+
+#Install Composer
+#php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+#php -r "if (hash_file('sha384', 'composer-setup.php') === '756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+evalcommand "curl -sS https://getcomposer.org/installer -o composer-setup.php" 1
+CKSUM=$( sha384sum composer-setup.php | awk '{print $1}' )
+if [ "${CKSUM}" = "756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3" ]; then
+        echo "composer-setup.php checksum OK"
+else
+        echo "composer-setup.php checksum failed"
+        exit 1
+fi
+evalcommand "php composer-setup.php" 1
+#php -r "unlink('composer-setup.php');"
+evalcommand "rm composer-setup.php" 1
+evalcommand "mv composer.phar /usr/bin/composer" 1
+
+#Install Laravel
+evalcommand "composer global require laravel/installer" 1
+
+#Set path for future use
+echo 'export PATH="$PATH:$HOME/.config/composer/vendor/bin"' | tee -a /root/.bashrc
+
+#evalcommand "apt purge -y curl" 1
+exit 0
+

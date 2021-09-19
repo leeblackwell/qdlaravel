@@ -1,0 +1,16 @@
+#!/bin/bash -x
+
+#Pull in functions 
+source /root/bash-functions.sh
+
+export DEBIAN_FRONTEND=noninteractive
+
+#We trash the cache data in configure_99_cleanup
+evalcommand "apt update" 1
+
+#Install 
+evalcommand "apt install -y redis-server" 1
+
+#Tweak config
+evalcommand "sed -r -i 's/^(^bind.*)/#Removed at build time; bind to everything.\n#\1/g' /etc/redis/redis.conf" 1
+evalcommand "sed -r -i 's/^(^protected-mode yes.*)/#Insecure FTW!\n#\1\nprotected-mode no/g' /etc/redis/redis.conf" 1

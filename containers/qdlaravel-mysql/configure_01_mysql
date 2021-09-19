@@ -1,0 +1,50 @@
+#!/bin/bash -x
+
+#resultcheck() {
+#	RES=$?
+#	if [ "${RES}" -ne 0 ]; then 
+#		echo "failure; abort."
+#		exit 1
+#	fi
+#}
+
+#Pull in functions 
+source /root/bash-functions.sh
+
+export DEBIAN_FRONTEND=noninteractive
+
+#We trash the cache data in configure_99_cleanup
+evalcommand "apt update" 1
+
+#init.sh requires rsync
+evalcommand "apt install -y rsync" 1
+
+#Let's try and make this script work as MySQL version numbers change.... 
+VERTEST=$( apt list | grep -E "mysql-server-[0-9]{1}.[0-9]{1}\/.*amd64" )
+RES=$?
+
+if [ "$RES" -ne 0 ]; then
+    echo "Unable to determine MySQL version ('mysql-server-[0-9]{1}.[0-9]{1}\/.*amd64')"
+    exit 1
+fi
+
+MYSQLVER=$( echo $VERTEST | cut -d\/ -f1 )
+echo "Determined MySQL version to be ${MYSQLVER}"
+
+#Install MySQL
+MYSQL_ROOT_PASSWORD="secret"
+evalcommand "echo ${MYSQLVER} mysql-server/root_password password '$MYSQL_ROOT_PASSWORD' | /usr/bin/debconf-set-selections" 1
+evalcommand "echo ${MYSQLVER} mysql-server/root_password_again password '$MYSQL_ROOT_PASSWORD' | /usr/bin/debconf-set-selections" 1
+evalcommand "apt install -y ${MYSQLVER}" 1
+
+{
+    echo "[client]"
+    echo "user=root"
+    echo "password=\"${MYSQL_ROOT_PASSWORD}\""
+} | tee /root/.my.cnf
+
+##Make new MySQL behave like MySQL 5.x
+echo "sql_mode = " >> /etc/mysql/mysql.conf.d/mysqld.cnf
+
+#Bind MySQL to everything so it works with the docker daemon for exposing the 3306 port
+sed -i -r 's/(bind-address\s+=\s+)127.0.0.1/\10.0.0.0/g' /etc/mysql/mysql.conf.d/mysqld.cnf

@@ -1,0 +1,35 @@
+#!/bin/bash
+
+function evalcommand() {
+  eval "$1";
+  RES=$?
+  if [ "$2" -eq 0 ]; then
+          # Warn about failure
+          if [ "$RES" -ne 0 ]; then
+                  echo "Received $RES from: $1"
+          fi
+  elif [ $2 -eq 1 ]; then
+          # Bail out
+          if [ "$RES" -ne 0 ]; then
+                  echo "Received $RES from: $1"
+                  exit 1
+          fi
+  elif [ "$2" -eq 100 ]; then
+          # Ignore apt's whining
+          if [ "$RES" -eq 100 ]; then
+                  echo "Received $RES from: $1"
+          elif [ "$RES" -ne 0 ]; then
+                  echo "Received $RES from: $1"
+                  exit 1
+          fi
+  fi
+}
+
+#Clear apt-cache and keep image size small as possible.
+evalcommand "env DEBIAN_FRONTEND=noninteractive apt clean" 1
+
+#We don't need apt list files; they're big and easily regenerated
+evalcommand "rm -rf /var/lib/apt/lists/*" 1
+
+#Clean-up install shizzle
+rm ${BASE}/configure*

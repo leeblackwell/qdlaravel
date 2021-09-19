@@ -1,0 +1,56 @@
+version: "3.5"
+
+services:
+  console:
+    build:
+      context: ./containers/
+      dockerfile: ./qdlaravel-console/Dockerfile 
+    container_name: qdlaravel-console
+    volumes:
+      - ./storage/app:/storage/app
+      - ./storage/database:/storage/database
+      - ./storage/certs:/storage/certs
+    networks:
+      qdlaravel-net:
+
+  web:
+    build:
+      context: ./containers/
+      dockerfile: ./qdlaravel-web/Dockerfile 
+    ports:
+      - "127.0.0.1:80:80"
+      - "127.0.0.1:443:443"
+    container_name: qdlaravel-web
+    environment:
+      WWWDOMAIN: www.qdlaravel.local
+    volumes:
+      - ./storage/app:/storage/app
+      - ./storage/certs:/storage/certs
+      - ./storage/app:/var/www/html
+    networks:
+      qdlaravel-net:
+
+  redis:
+    build:
+      context: ./containers/
+      dockerfile: ./qdlaravel-redis/Dockerfile 
+    ports:
+      - "127.0.0.1:6379:6379"
+    container_name: qdlaravel-redis
+    networks:
+      qdlaravel-net:        
+
+  db:
+    build:
+      context: ./containers/
+      dockerfile: ./qdlaravel-mysql/Dockerfile 
+    ports:
+      - "127.0.0.1:33060:3306"
+    container_name: qdlaravel-db
+    volumes:
+      - ./storage/database:/mysql
+    networks:
+      qdlaravel-net:
+      
+networks:
+  qdlaravel-net:

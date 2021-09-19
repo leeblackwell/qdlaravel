@@ -1,0 +1,13 @@
+#!/bin/bash -x
+
+#Pull in functions 
+source /root/bash-functions.sh
+
+export DEBIAN_FRONTEND=noninteractive
+
+#We trash the cache data in configure_99_cleanup
+evalcommand "apt update" 1
+
+#Install 
+evalcommand "apt install -y telnet vim iputils-ping" 1
+

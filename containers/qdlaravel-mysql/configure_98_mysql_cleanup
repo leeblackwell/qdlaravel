@@ -1,0 +1,7 @@
+#!/bin/bash
+
+#Pull in functions 
+source /root/bash-functions.sh
+
+#Remove dependencies that mysql installs that we (probably?) don't need.
+evalcommand "env DEBIAN_FRONTEND=noninteractive apt purge -y mecab-ipadic mecab-utils" 100
