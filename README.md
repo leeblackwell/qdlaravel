@@ -58,3 +58,9 @@ Now, blow away the `public` symlink and recreate it to your new laravel instance
 > `root@03bf89467e2e:/storage/app# ln -s ThisIsATestApp/public public`
 
 Now restart the containers and robert is your mothers brother.
+
+
+
+##TODO
+
+  * match local UID and have everything inside containers use that UID? (easier for permissions on files n'ting)

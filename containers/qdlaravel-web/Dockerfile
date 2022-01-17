@@ -1,5 +1,6 @@
 #Build via docker-compose for context/path to be correct
-FROM ubuntu:focal
+#FROM ubuntu:focal
+FROM qdlaravel_console
 
 MAINTAINER lee@leeblackwell.com
 

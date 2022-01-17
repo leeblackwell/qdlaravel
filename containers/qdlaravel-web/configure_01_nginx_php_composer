@@ -45,20 +45,10 @@ echo '}'
 evalcommand "apt install -y git curl unzip" 1
 
 #Install Composer
-#php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-#php -r "if (hash_file('sha384', 'composer-setup.php') === '756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-evalcommand "curl -sS https://getcomposer.org/installer -o composer-setup.php" 1
-CKSUM=$( sha384sum composer-setup.php | awk '{print $1}' )
-if [ "${CKSUM}" = "756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3" ]; then
-        echo "composer-setup.php checksum OK"
-else
-        echo "composer-setup.php checksum failed"
-        exit 1
-fi
-evalcommand "php composer-setup.php" 1
-#php -r "unlink('composer-setup.php');"
-evalcommand "rm composer-setup.php" 1
-evalcommand "mv composer.phar /usr/bin/composer" 1
+#InstallComposer
+#evalcommand "php composer-setup.php" 1
+#evalcommand "rm composer-setup.php" 1
+#evalcommand "mv composer.phar /usr/bin/composer" 1
 
 #Install Laravel
 evalcommand "composer global require laravel/installer" 1
