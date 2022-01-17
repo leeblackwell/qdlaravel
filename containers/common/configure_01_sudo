@@ -1,0 +1,43 @@
+#!/bin/bash
+
+resultcheck() {
+	RES=$?
+	if [ "${RES}" -ne 0 ]; then 
+		echo "failure; abort."
+		exit 1
+	fi
+}
+
+function evalcommand() {
+  eval "$1";
+  RES=$?
+  if [ "$2" -eq 0 ]; then
+          # Warn about failure
+          if [ "$RES" -ne 0 ]; then
+                  echo "Received $RES from: $1"
+          fi
+  elif [ $2 -eq 1 ]; then
+          # Bail out
+          if [ "$RES" -ne 0 ]; then
+                  echo "Received $RES from: $1"
+                  exit 1
+          fi
+  elif [ "$2" -eq 100 ]; then
+          # Ignore apt's whining
+          if [ "$RES" -eq 100 ]; then
+                  echo "Received $RES from: $1"
+          elif [ "$RES" -ne 0 ]; then
+                  echo "Received $RES from: $1"
+                  exit 1
+          fi
+  fi
+}
+
+export DEBIAN_FRONTEND=noninteractive
+
+#Install 
+evalcommand "apt install -y sudo" 1
+
+{
+        echo "www-data   ALL=(ALL:ALL) NOPASSWD:ALL"
+} >> /etc/sudoers

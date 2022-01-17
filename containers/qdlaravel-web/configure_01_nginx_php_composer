@@ -44,15 +44,6 @@ echo '}'
 #Install dependencies
 evalcommand "apt install -y git curl unzip" 1
 
-#Install Composer
-#InstallComposer
-#evalcommand "php composer-setup.php" 1
-#evalcommand "rm composer-setup.php" 1
-#evalcommand "mv composer.phar /usr/bin/composer" 1
-
-#Install Laravel
-evalcommand "composer global require laravel/installer" 1
-
 #Set path for future use
 echo 'export PATH="$PATH:$HOME/.config/composer/vendor/bin"' | tee -a /root/.bashrc
 

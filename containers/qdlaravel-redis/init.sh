@@ -2,6 +2,9 @@
 
 source /root/bash-functions.sh
 
+#check env vars passed from host
+envcheck
+
 evalcommand "/etc/init.d/redis-server start" 1
 
 #Loop until something dies or is killed 

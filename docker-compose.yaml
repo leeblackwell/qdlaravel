@@ -22,7 +22,10 @@ services:
       - "127.0.0.1:443:443"
     container_name: qdlaravel-web
     environment:
-      WWWDOMAIN: www.qdlaravel.local
+      - WWWDOMAIN:"www.qdlaravel.local"
+      - QDLARAVELENVSET
+      - HOSTUID
+      - HOSTGID
     volumes:
       - ./storage/app:/storage/app
       - ./storage/certs:/storage/certs

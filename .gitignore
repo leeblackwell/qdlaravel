@@ -1,2 +1,3 @@
 storage/database/*
 .idea
+.env
