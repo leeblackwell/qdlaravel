@@ -9,5 +9,5 @@ export DEBIAN_FRONTEND=noninteractive
 evalcommand "apt update" 1
 
 #Install 
-evalcommand "apt install -y telnet vim iputils-ping" 1
+evalcommand "apt install -y rsync iputils-ping" 1
 

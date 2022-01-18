@@ -6,6 +6,10 @@ services:
       context: ./containers/
       dockerfile: ./qdlaravel-console/Dockerfile 
     container_name: qdlaravel-console
+    environment:
+      - QDLARAVELENVSET
+      - HOSTUID
+      - HOSTGID
     volumes:
       - ./storage/app:/storage/app
       - ./storage/database:/storage/database
@@ -18,8 +22,8 @@ services:
       context: ./containers/
       dockerfile: ./qdlaravel-web/Dockerfile 
     ports:
-      - "127.0.0.1:80:80"
-      - "127.0.0.1:443:443"
+      - ${BINDHTTP}
+      - ${BINDHTTPS}
     container_name: qdlaravel-web
     environment:
       - WWWDOMAIN:"www.qdlaravel.local"
@@ -38,8 +42,12 @@ services:
       context: ./containers/
       dockerfile: ./qdlaravel-redis/Dockerfile 
     ports:
-      - "127.0.0.1:6379:6379"
+      - ${BINDREDIS}
     container_name: qdlaravel-redis
+    environment:
+      - QDLARAVELENVSET
+      - HOSTUID
+      - HOSTGID
     networks:
       qdlaravel-net:        
 
@@ -48,8 +56,12 @@ services:
       context: ./containers/
       dockerfile: ./qdlaravel-mysql/Dockerfile 
     ports:
-      - "127.0.0.1:33060:3306"
+      - ${BINDMYSQL}
     container_name: qdlaravel-db
+    environment:
+      - QDLARAVELENVSET
+      - HOSTUID
+      - HOSTGID
     volumes:
       - ./storage/database:/mysql
     networks:

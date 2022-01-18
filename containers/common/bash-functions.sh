@@ -104,25 +104,28 @@ function InstallComposer() {
 }
 
 function envcheck() {
-    echo "*** \${QDLARAVELENVSET} = ${QDLARAVELENVSET}"
+    #echo "*** \${QDLARAVELENVSET} = ${QDLARAVELENVSET}"
     if [ -z "${QDLARAVELENVSET}" ]; then
             echo "\${QDLARAVELENVSET} not set; aborting."
             echo "Did you run set-environment.sh?"
             exit 1
     fi
 }
+
 ###############################################################
 #
 # Init actions (applies to all containers ;)
 #
 ###############################################################
 
-MYIP=""
-getmyip
-export MYIP
-echo "${THISME} Detected IP address as $MYIP"
+#MYIP=""
+#getmyip
+#export MYIP
+#echo "${THISME} Detected IP address as $MYIP"
 
 if [ -f /image_build_timestamp.txt ]; then
     echo -n "This image built "
     cat /image_build_timestamp.txt
 fi
+
+#envcheck

@@ -1,5 +1,10 @@
 #!/bin/bash 
 
+LOCALHTTPPORT=8080
+LOCALHTTPSPORT=10443 
+LOCALMYSQLPORT=33060
+LOCALREDISPORT=6379
+
 MYABSDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 if [ -f ${MYABSDIR}/.env ]; then
@@ -9,4 +14,11 @@ else
     echo QDLARAVELENVSET=1 > ${MYABSDIR}/.env
     echo "HOSTUID=$(id -u)" >> ${MYABSDIR}/.env
     echo "HOSTGID=$(id -g)" >> ${MYABSDIR}/.env
+    #
+    #
+    #LOCALHTTPPORT=10080
+    echo "BINDHTTP=\"127.0.0.1:${LOCALHTTPPORT}:80\"" >> ${MYABSDIR}/.env
+    echo "BINDHTTPS=\"127.0.0.1:${LOCALHTTPSPORT}:443\"" >> ${MYABSDIR}/.env
+    echo "BINDMYSQL=\"127.0.0.1:${LOCALMYSQLPORT}:3306\"" >> ${MYABSDIR}/.env
+    echo "BINDREDIS=\"127.0.0.1:${LOCALREDISPORT}:6379\"" >> ${MYABSDIR}/.env
 fi 

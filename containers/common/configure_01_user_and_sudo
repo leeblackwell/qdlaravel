@@ -39,5 +39,6 @@ export DEBIAN_FRONTEND=noninteractive
 evalcommand "apt install -y sudo" 1
 
 {
-        echo "www-data   ALL=(ALL:ALL) NOPASSWD:ALL"
+        echo "containeruser   ALL=(ALL:ALL) NOPASSWD:ALL"
 } >> /etc/sudoers
+

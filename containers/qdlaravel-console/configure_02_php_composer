@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 #Pull in functions 
 source /root/bash-functions.sh
@@ -32,7 +32,7 @@ evalcommand "mv composer.phar /usr/bin/composer" 1
 evalcommand "composer global require laravel/installer" 1
 
 #Set path for future use
-echo 'export PATH="$PATH:$HOME/.composer/vendor/bin/"' | tee -a /root/.bashrc
+#echo 'export PATH="$PATH:$HOME/.composer/vendor/bin/"' | tee -a /root/.bashrc
 
 #evalcommand "apt purge -y curl" 1
 exit 0

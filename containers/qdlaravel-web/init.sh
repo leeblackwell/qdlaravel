@@ -1,9 +1,9 @@
 #!/bin/bash
 
 source /root/bash-functions.sh
-
-#check env vars passed from host
 envcheck
+
+
 
 APPBASEDIR="/var/www/html"
 if [ -f ${APPBASEDIR}/BIND-MARKER ]; then 

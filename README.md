@@ -27,9 +27,11 @@ Launch with `docker-compose up` (or include `-d` for daemon mode).  When it's up
 
 > `docker container exec -it qdlaravel-web /bin/bash`
 
-.... and switch to the `/storage/app` dir:
+.... become the 'containeruser':
 
-> `cd /storage/app/``
+> `su - containeruser`
+
+.... which will switch you to the `/storage/app` dir automatically.
 
 Now create your laravel project:
 
@@ -54,13 +56,14 @@ Installing laravel/laravel (v8.6.2)
 
 Now, blow away the `public` symlink and recreate it to your new laravel instance public dir:
 
-> `root@03bf89467e2e:/storage/app# rm public`  
-> `root@03bf89467e2e:/storage/app# ln -s ThisIsATestApp/public public`
+> `containeruser@03bf89467e2e:/storage/app# rm public`  
+> `containeruser@03bf89467e2e:/storage/app# ln -s ThisIsATestApp/public public`
 
-Now restart the containers and robert is your mothers brother.
+Fix permissions with the supplied script:
+
+> `fixpermissions.sh `
 
 
+Fin.
 
-##TODO
 
-  * match local UID and have everything inside containers use that UID? (easier for permissions on files n'ting)
