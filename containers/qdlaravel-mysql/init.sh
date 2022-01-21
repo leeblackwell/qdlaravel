@@ -48,6 +48,10 @@ do
     rm ${PIDFILE}
 done
 
+if [ -f /var/log/mysql/error.log ]; then 
+    rm /var/log/mysql/error.log
+fi
+
 #Override where MySQL looks for databases (to our BIND mount)
 #/etc/mysql/mysql.conf.d/mysqld.cnf:# datadir    = /var/lib/mysql
 sed -r -i "s/(#\s?datadir\s?=\s?\/var\/lib\/mysql)/\1\ndatadir = \\${DATABASEDIR}/g" /etc/mysql/mysql.conf.d/mysqld.cnf
@@ -82,5 +86,6 @@ do
     if [ ${RES} -ne 0 ]; then
         echo "Failed to find /usr/sbin/mysqld in the process list; aborting."
         LOOPIT=0
+        cat /var/log/mysql/error.log
     fi
 done
