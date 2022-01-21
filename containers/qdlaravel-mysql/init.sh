@@ -43,7 +43,10 @@ else
 fi
 
 #Remove old PID files
-rm ${DATABASEDIR}/*.pid
+for PIDFILE in $( ls ${DATABASEDIR}/*.pid )
+do
+    rm ${PIDFILE}
+done
 
 #Override where MySQL looks for databases (to our BIND mount)
 #/etc/mysql/mysql.conf.d/mysqld.cnf:# datadir    = /var/lib/mysql
