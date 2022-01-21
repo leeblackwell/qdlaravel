@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 source /root/bash-functions.sh
 envcheck
@@ -68,12 +68,19 @@ fi
 LOOPIT=1
 while [ ${LOOPIT} -eq 1 ]
 do
-    sleep 30
+    sleep 5
     #echo "MySQL alive check loop, started"
-    P=$( ls -1rt ${DATABASEDIR}/*.pid | tail -1 )
-    if [ ! -f ${P} ]; then LOOPIT=0 ; fi
-    M=$( cat $P )
-    C=$( ps -eF | sed -r -n "/^mysql\s+${M}/p" | wc -l ) 
-    if [ "${C}" -eq 0 ]; then LOOPIT=0 ; fi
+    ##ls -l ${DATABASEDIR}/*.pid
+    ##P=$( ls -1rt ${DATABASEDIR}/*.pid | tail -1 )
+    ##if [ ! -f ${P} ]; then LOOPIT=0 ; fi
+    ##M=$( cat $P )
+    ##C=$( ps -eF | sed -r -n "/^mysql\s+${M}/p" | wc -l ) 
+    ##if [ "${C}" -eq 0 ]; then LOOPIT=0 ; fi
     #echo "MySQL alive check loop, finished, LOOPIT = ${LOOPIT}"
+    NULL=$( ps -eF | egrep "^mysql.*[0-9]{2}:[0-9]{2}:[0-9]{2} \/usr\/sbin\/mysqld" )
+    RES=$?
+    if [ ${RES} -ne 0 ]; then
+        echo "Failed to find /usr/sbin/mysqld in the process list; aborting."
+        LOOPIT=0
+    fi
 done
