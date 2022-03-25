@@ -15,6 +15,20 @@ createdbuser() {
     } | mysql -A
 }
 
+createdefaultdatabase() {
+    {
+        echo "CREATE DATABASE qdlaravel;"
+        echo "GRANT ALL PRIVILEGES ON qdlaravel.* TO 'qdlaravel'@'%';"
+    } | mysql -A
+}
+
+createtestdatabase() {
+    {
+        echo "CREATE DATABASE IF NOT EXISTS qdlaravel_testing;"
+        echo "GRANT ALL PRIVILEGES ON qdlaravel_testing.* TO 'qdlaravel'@'%';"
+    } | mysql -A
+}
+
 startMySQL() {
     #stop su complaining about /nonexistent
     usermod -d /tmp mysql 
@@ -59,9 +73,12 @@ if [ ! -d ${DATABASEDIR}/mysql ]; then
     chown -R mysql:mysql ${DATABASEDIR}
     startMySQL
     createdbuser
+    createdefaultdatabase
+    createtestdatabase
 else
     echo "DB appears to be setup already; continuing."
     startMySQL
+    createtestdatabase
 fi
 
 #Loop until mysql dies or is killed 

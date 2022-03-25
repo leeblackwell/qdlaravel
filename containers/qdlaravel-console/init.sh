@@ -71,8 +71,22 @@ mkdir /home/containeruser/bin
 } > /home/containeruser/bin/fixpermissions.sh
 chown containeruser:containeruser /home/containeruser/bin/fixpermissions.sh
 chmod 755 /home/containeruser/bin/fixpermissions.sh
-#
+
+{
+    echo '#!/bin/bash'
+    echo 'cd /storage/app/public'
+    echo 'npm install'
+    echo 'npm run dev'    
+} > /home/containeruser/bin/npmmagic.sh
+chown containeruser:containeruser /home/containeruser/bin/npmmagic.sh
+chmod 755 /home/containeruser/bin/npmmagic.sh
+
+#Bootstrap/cleanup stuff
 sudo su -c /home/containeruser/bin/fixpermissions.sh containeruser
+sudo su -c /home/containeruser/bin/npmmagic.sh containeruser
+
+#Set console user to the 'correct' user by default
+echo "sudo su - -c /bin/bash containeruser" | tee -a ~/.bashrc
 
 #enter forever loop
 while true

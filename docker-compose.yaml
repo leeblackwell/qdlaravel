@@ -10,6 +10,7 @@ services:
       - QDLARAVELENVSET
       - HOSTUID
       - HOSTGID
+      - NODEVERSION
     volumes:
       - ./storage/app:/storage/app
       - ./storage/database:/storage/database
@@ -21,21 +22,25 @@ services:
     build:
       context: ./containers/
       dockerfile: ./qdlaravel-web/Dockerfile 
+    container_name: qdlaravel-web
     ports:
       - ${BINDHTTP}
       - ${BINDHTTPS}
-    container_name: qdlaravel-web
     environment:
-      - WWWDOMAIN:"www.qdlaravel.local"
+      - WWWDOMAIN
+      - HTACCESS
       - QDLARAVELENVSET
       - HOSTUID
       - HOSTGID
+      - NODEVERSION
     volumes:
       - ./storage/app:/storage/app
       - ./storage/certs:/storage/certs
       - ./storage/app:/var/www/html
     networks:
       qdlaravel-net:
+    depends_on:
+      - console
 
   redis:
     build:
@@ -66,6 +71,14 @@ services:
       - ./storage/database:/mysql
     networks:
       qdlaravel-net:
-      
+  
+  maildev:
+    container_name: qdlaravel_maildev
+    image: maildev/maildev
+    ports:
+      - "1080:80"
+    networks:
+      qdlaravel-net:
+
 networks:
   qdlaravel-net:

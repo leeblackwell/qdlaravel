@@ -3,7 +3,10 @@ FROM ubuntu:focal
 
 MAINTAINER lee@leeblackwell.com
 
-COPY common/* qdlaravel-console/configure* qdlaravel-console/init.sh /root/
+ARG NODEVERSION=14
+ENV NODEVERSION ${NODEVERSION}
+
+COPY common/* qdlaravel-console/configure* qdlaravel-console/init.sh  /root/
 
 RUN /root/configure.sh
 

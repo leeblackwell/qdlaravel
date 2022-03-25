@@ -4,8 +4,10 @@ FROM qdlaravel_console
 
 MAINTAINER lee@leeblackwell.com
 
-ARG WWWDOMAIN="www.placeholder.com"
+#ARG WWWDOMAIN="www.placeholder.com"
 ENV WWWDOMAIN ${WWWDOMAIN}
+
+ENV HTACCESS ${HTACCESS}
 
 COPY common/* qdlaravel-web/configure* qdlaravel-web/init.sh qdlaravel-web/cert.sh /root/
 
