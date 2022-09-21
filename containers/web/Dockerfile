@@ -9,7 +9,7 @@ ENV WWWDOMAIN ${WWWDOMAIN}
 
 ENV HTACCESS ${HTACCESS}
 
-COPY common/* qdlaravel-web/configure* qdlaravel-web/init.sh qdlaravel-web/cert.sh /root/
+COPY common/* web/configure* web/init.sh web/cert.sh /root/
 
 RUN /root/configure.sh
 

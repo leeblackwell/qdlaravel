@@ -104,9 +104,9 @@ function InstallComposer() {
 }
 
 function envcheck() {
-    #echo "*** \${QDLARAVELENVSET} = ${QDLARAVELENVSET}"
-    if [ -z "${QDLARAVELENVSET}" ]; then
-            echo "\${QDLARAVELENVSET} not set; aborting."
+    #echo "*** \${ENVSET} = ${ENVSET}"
+    if [ -z "${ENVSET}" ]; then
+            echo "\${ENVSET} not set; aborting."
             echo "Did you run set-environment.sh?"
             exit 1
     fi

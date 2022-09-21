@@ -3,10 +3,10 @@ FROM ubuntu:focal
 
 MAINTAINER lee@leeblackwell.com
 
-COPY common/* qdlaravel-mysql/configure* qdlaravel-mysql/init.sh /root/
+COPY common/* redis/configure* redis/init.sh /root/
 
 RUN /root/configure.sh
 
 CMD ["/usr/bin/dumb-init","-v","/root/init.sh"]
 
-#docker container run -it -p3306:3306 --mount type=bind,source="$(pwd)"/_BINDMOUNT,target=/mysql container:tag
+#docker container run -it -p80:80 --mount type=bind,source="$(pwd)"/_BINDMOUNT,target=/app container:tag

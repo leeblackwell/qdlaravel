@@ -4,10 +4,11 @@ services:
   console:
     build:
       context: ./containers/
-      dockerfile: ./qdlaravel-console/Dockerfile 
-    container_name: qdlaravel-console
+      dockerfile: ./console/Dockerfile 
+    container_name: ${APPNAME:?err}-console
     environment:
-      - QDLARAVELENVSET
+      - ENVSET
+      - APPNAME
       - HOSTUID
       - HOSTGID
       - NODEVERSION
@@ -15,21 +16,20 @@ services:
       - ./storage/app:/storage/app
       - ./storage/database:/storage/database
       - ./storage/certs:/storage/certs
-    networks:
-      qdlaravel-net:
-
+    
   web:
     build:
       context: ./containers/
-      dockerfile: ./qdlaravel-web/Dockerfile 
-    container_name: qdlaravel-web
+      dockerfile: ./web/Dockerfile 
     ports:
-      - ${BINDHTTP}
-      - ${BINDHTTPS}
+      - "${BINDHTTP}"
+      - "${BINDHTTPS}"
+    container_name: ${APPNAME:?err}-web
     environment:
+      - WILDCARDCERT
       - WWWDOMAIN
       - HTACCESS
-      - QDLARAVELENVSET
+      - ENVSET
       - HOSTUID
       - HOSTGID
       - NODEVERSION
@@ -37,48 +37,40 @@ services:
       - ./storage/app:/storage/app
       - ./storage/certs:/storage/certs
       - ./storage/app:/var/www/html
-    networks:
-      qdlaravel-net:
+      - ./storage/logs/nginx:/var/log/nginx
     depends_on:
       - console
 
   redis:
     build:
       context: ./containers/
-      dockerfile: ./qdlaravel-redis/Dockerfile 
+      dockerfile: ./redis/Dockerfile 
     ports:
-      - ${BINDREDIS}
-    container_name: qdlaravel-redis
+      - "${BINDREDIS}"
+    container_name: ${APPNAME:?err}-redis
     environment:
-      - QDLARAVELENVSET
+      - ENVSET
       - HOSTUID
       - HOSTGID
-    networks:
-      qdlaravel-net:        
 
   db:
     build:
       context: ./containers/
-      dockerfile: ./qdlaravel-mysql/Dockerfile 
+      dockerfile: ./mysql/Dockerfile 
     ports:
-      - ${BINDMYSQL}
-    container_name: qdlaravel-db
+      - "${BINDMYSQL}"
+    container_name: ${APPNAME:?err}-db
     environment:
-      - QDLARAVELENVSET
+      - ENVSET
       - HOSTUID
       - HOSTGID
     volumes:
       - ./storage/database:/mysql
-    networks:
-      qdlaravel-net:
   
   maildev:
-    container_name: qdlaravel_maildev
+    container_name: mcc_maildev
     image: maildev/maildev
     ports:
       - "1080:80"
-    networks:
-      qdlaravel-net:
 
-networks:
-  qdlaravel-net:
+

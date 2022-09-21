@@ -6,7 +6,7 @@ MAINTAINER lee@leeblackwell.com
 ARG NODEVERSION=14
 ENV NODEVERSION ${NODEVERSION}
 
-COPY common/* qdlaravel-console/configure* qdlaravel-console/init.sh  /root/
+COPY common/* console/configure* console/init.sh  /root/
 
 RUN /root/configure.sh
 

@@ -3,6 +3,7 @@
 #Global
 WWWDOMAIN="www.qdlaravel.local"
 HTACCESS=0
+APPNAME="qdlaravel"
 
 #Dev Env
 LOCALHTTPPORT=8080
@@ -22,7 +23,8 @@ if [ -f ${MYABSDIR}/.env ]; then
     echo "${MYABSDIR}/.env already exists - won't clobber... aborting."
     exit 1
 else
-    echo QDLARAVELENVSET=1 > ${MYABSDIR}/.env
+    echo ENVSET=1 > ${MYABSDIR}/.env
+    echo "APPNAME=${APPNAME}" >> ${MYABSDIR}/.env
     echo "HOSTUID=$(id -u)" >> ${MYABSDIR}/.env
     echo "HOSTGID=$(id -g)" >> ${MYABSDIR}/.env
     echo "BINDHTTP=127.0.0.1:${LOCALHTTPPORT}:80" >> ${MYABSDIR}/.env
