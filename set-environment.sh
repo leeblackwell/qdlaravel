@@ -2,8 +2,14 @@
 
 #Global
 WWWDOMAIN="www.qdlaravel.local"
+WILDCARDCERT=0
 HTACCESS=0
+HTUSER=myuser
+HTPASS=mypass
 APPNAME="qdlaravel"
+NODEVERSION=16
+DATABASENAME="qdlaravel"
+DATABASEUSER="qdlaravel"
 
 #Dev Env
 LOCALHTTPPORT=8080
@@ -24,7 +30,9 @@ if [ -f ${MYABSDIR}/.env ]; then
     exit 1
 else
     echo ENVSET=1 > ${MYABSDIR}/.env
-    echo "APPNAME=${APPNAME}" >> ${MYABSDIR}/.env
+    echo "COMPOSE_PROJECT_NAME=${APPNAME}" >> ${MYABSDIR}/.env
+    echo "DATABASENAME=${DATABASENAME}" >> ${MYABSDIR}/.env
+    echo "DATABASEUSER=${DATABASEUSER}" >> ${MYABSDIR}/.env
     echo "HOSTUID=$(id -u)" >> ${MYABSDIR}/.env
     echo "HOSTGID=$(id -g)" >> ${MYABSDIR}/.env
     echo "BINDHTTP=127.0.0.1:${LOCALHTTPPORT}:80" >> ${MYABSDIR}/.env
@@ -32,5 +40,10 @@ else
     echo "BINDMYSQL=127.0.0.1:${LOCALMYSQLPORT}:3306" >> ${MYABSDIR}/.env
     echo "BINDREDIS=127.0.0.1:${LOCALREDISPORT}:6379" >> ${MYABSDIR}/.env
     echo "WWWDOMAIN=${WWWDOMAIN}" >> ${MYABSDIR}/.env
+    echo "WILDCARDCERT=${WILDCARDCERT}" >> ${MYABSDIR}/.env
+    echo "APPNAME=${APPNAME}" >> ${MYABSDIR}/.env
     echo "NODEVERSION=${NODEVERSION}" >> ${MYABSDIR}/.env
+    echo "HTACCESS=${HTACCESS}" >> ${MYABSDIR}/.env
+    echo "HTUSER=${HTUSER}" >> ${MYABSDIR}/.env
+    echo "HTPASSWD=${HTPASSWD}" >> ${MYABSDIR}/.env
 fi 
