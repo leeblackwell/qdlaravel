@@ -8,6 +8,11 @@ THISME=$( basename $0 )
 #
 ###############################################################
 
+linebar(){
+  seq -s- 79|tr -d '[:digit:]'
+  #seq -s- $(tput cols)|tr -d '[:digit:]'
+}
+
 resultcheck() {
 	RES=$?
 	if [ "${RES}" -ne 0 ]; then 

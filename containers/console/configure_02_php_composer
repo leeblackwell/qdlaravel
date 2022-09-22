@@ -9,7 +9,7 @@ export DEBIAN_FRONTEND=noninteractive
 evalcommand "apt update" 1
 
 #Install 
-evalcommand "apt install -y php-cli php-mysql php-bcmath php-json php-mbstring php-services-json php-tokenizer php-xml" 1
+evalcommand "apt install -y php-cli php-mysql php-bcmath php-json php-mbstring php-services-json php-tokenizer php-xml php-curl" 1
 
 PHPVER=$( apt list | egrep "^php[0-9]\.[0-9]\/" | sed -r 's/php([0-9]{1}\.[0-9]{1}).*/\1/g' )
 echo "${PHPVER}" > /root/php-version

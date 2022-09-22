@@ -9,23 +9,23 @@ createdbuser() {
     #Create our user
     {
         echo "USE mysql;"
-        echo "CREATE USER 'qdlaravel'@'%' IDENTIFIED BY 'secret';"
-        echo "GRANT ALL ON *.* TO 'qdlaravel'@'%';"
+        echo "CREATE USER '${DATABASEUSER}'@'%' IDENTIFIED BY 'secret';"
+        echo "GRANT ALL ON *.* TO '${DATABASEUSER}'@'%';"
         echo "FLUSH PRIVILEGES;"    
     } | mysql -A
 }
 
 createdefaultdatabase() {
     {
-        echo "CREATE DATABASE qdlaravel;"
-        echo "GRANT ALL PRIVILEGES ON qdlaravel.* TO 'qdlaravel'@'%';"
+        echo "CREATE DATABASE ${DATABASENAME};"
+        echo "GRANT ALL PRIVILEGES ON ${DATABASENAME}.* TO '${DATABASEUSER}'@'%';"
     } | mysql -A
 }
 
 createtestdatabase() {
     {
-        echo "CREATE DATABASE IF NOT EXISTS qdlaravel_testing;"
-        echo "GRANT ALL PRIVILEGES ON qdlaravel_testing.* TO 'qdlaravel'@'%';"
+        echo "CREATE DATABASE IF NOT EXISTS ${DATABASENAME}_testing;"
+        echo "GRANT ALL PRIVILEGES ON ${DATABASENAME}_testing.* TO '${DATABASEUSER}'@'%';"
     } | mysql -A
 }
 
@@ -49,12 +49,40 @@ startMySQL() {
 
 #TODO
 #Ensure we have a drive present, expecting a bind mount
-if [ -f "${DATABASEDIR}/BIND-MARKER" ]; then 
-    echo "Bind mount present on ${DATABASEDIR}"
-else
-    echo "Bind mount missing (${DATABASEDIR}); abort."
+#if [ -f "${DATABASEDIR}/BIND-MARKER" ]; then 
+#    echo "Bind mount present on ${DATABASEDIR}"
+#else
+#    echo "Bind mount missing (${DATABASEDIR}); abort."
+#    exit 1
+#fi
+
+#Bind mount check
+#Check bind mounts are in place
+MOUNTSPRESENTANDCORRECT=1
+for CHKDIR in ${DATABASEDIR}
+do 
+    MOUNTED=$( grep -E -v "(\/proc|\/etc)|^(devpts|tmpfs|cgroup|sysfs|mqueue|shm|overlay)" /etc/mtab )
+    echo "${MOUNTED}" | grep -E "${CHKDIR}"
+    RES=$?
+    if [ "${RES}" -eq 0 ]; then
+        echo "Bind mount present on ${CHKDIR}"
+    else
+        echo "Bind mount missing (${CHKDIR})"
+        MOUNTSPRESENTANDCORRECT=0
+    fi
+done
+
+if [ ${MOUNTSPRESENTANDCORRECT} -ne 1 ]; then
     exit 1
 fi
+
+#if [ "${DEBUGMODE}" -gt 0 ]; then 
+#    SKIPBINDMOUNT=1
+#fi
+#
+#if [[ ${MOUNTSPRESENTANDCORRECT} -ne 1 && ${SKIPBINDMOUNT} -ne 1 ]]; then
+#    exit 1
+#fi
 
 #Remove old PID files
 for PIDFILE in $( ls ${DATABASEDIR}/*.pid )

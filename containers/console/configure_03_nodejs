@@ -1,0 +1,59 @@
+#!/bin/bash
+
+resultcheck() {
+	RES=$?
+	if [ "${RES}" -ne 0 ]; then 
+		echo "failure; abort."
+		exit 1
+	fi
+}
+
+env DEBIAN_FRONTEND=noninteractive apt update
+resultcheck
+
+env DEBIAN_FRONTEND=noninteractive apt install -y lsb-release ca-certificates curl gnupg
+resultcheck
+
+curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
+resultcheck
+
+# Source: https://github.com/nodesource/distributions/blob/master/README.md#deb
+
+# Replace with the branch of Node.js or io.js you want to install: node_6.x, node_8.x, etc...
+VERSION=node_${NODEVERSION}.x
+# The below command will set this correctly, but if lsb_release isn't available, you can set it manually:
+# - For Debian distributions: jessie, sid, etc...
+# - For Ubuntu distributions: xenial, bionic, etc...
+# - For Debian or Ubuntu derived distributions your best option is to use the codename corresponding to the upstream release your distribution is based off. This is an advanced scenario and unsupported if your distribution is not listed as supported per earlier in this README.
+#DISTRO="$(lsb_release -s -c)"
+#resultcheck
+#echo "deb https://deb.nodesource.com/$VERSION $DISTRO main" | tee /etc/apt/sources.list.d/nodesource.list
+#resultcheck
+#echo "deb-src https://deb.nodesource.com/$VERSION $DISTRO main" | tee -a /etc/apt/sources.list.d/nodesource.list
+
+# Their setup script is detailed and covers stuff I can't be arsed to check, so let's
+# roll with it.
+curl -sL https://deb.nodesource.com/setup_${NODEVERSION}.x > setup_node_${NODEVERSION}.sh
+resultcheck
+
+bash setup_node_${NODEVERSION}.sh
+resultcheck
+
+apt install -y nodejs
+resultcheck
+
+env DEBIAN_FRONTEND=noninteractive apt -y autoremove
+resultcheck
+
+exit 0
+
+env DEBIAN_FRONTEND=noninteractive apt update
+resultcheck
+
+env DEBIAN_FRONTEND=noninteractive apt install -y npm
+resultcheck
+
+#env DEBIAN_FRONTEND=noninteractive apt purge -y lsb-release ca-certificates
+#resultcheck
+env DEBIAN_FRONTEND=noninteractive apt -y autoremove
+resultcheck

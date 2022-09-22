@@ -1,13 +1,12 @@
 #Build via docker-compose for context/path to be correct
-#FROM ubuntu:focal
-FROM qdlaravel_console
+FROM ubuntu:focal
 
 MAINTAINER lee@leeblackwell.com
 
 #ARG WWWDOMAIN="www.placeholder.com"
 ENV WWWDOMAIN ${WWWDOMAIN}
-
 ENV HTACCESS ${HTACCESS}
+ENV WILDCARDCERT ${WILDCARDCERT}
 
 COPY common/* web/configure* web/init.sh web/cert.sh /root/
 

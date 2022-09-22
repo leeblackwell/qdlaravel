@@ -3,10 +3,14 @@ FROM ubuntu:focal
 
 MAINTAINER lee@leeblackwell.com
 
-ARG NODEVERSION=14
+ARG NODEVERSION=16
 ENV NODEVERSION ${NODEVERSION}
+ENV APPNAME ${APPNAME}
+ENV DATABASENAME ${DATABASENAME}
+ENV DATABASEUSER ${DATABASEUSER}
 
-COPY common/* console/configure* console/init.sh  /root/
+
+COPY common/* console/configure* console/init.sh /root/
 
 RUN /root/configure.sh
 

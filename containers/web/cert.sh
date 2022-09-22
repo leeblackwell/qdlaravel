@@ -1,19 +1,21 @@
-#!/bin/bash
+#!/bin/bash -x
+
+SEARCHDOMAIN=""
 
 #Pull in functions 
 source /root/bash-functions.sh
 
 checkcertfiles() {
-  if [ -f /storage/certs/${DOMAIN}.key ]; then KEY=1 ; fi
-  if [ -f /storage/certs/${DOMAIN}.crt ]; then CERT=1 ; CRTEXT=1 ; fi
-  if [ -f /storage/certs/${DOMAIN}.pem ]; then CERT=1 ; CRTEXT=2 ; fi
+  if [ -f /storage/certs/${SEARCHDOMAIN}.key ]; then KEY=1 ; fi
+  if [ -f /storage/certs/${SEARCHDOMAIN}.crt ]; then CERT=1 ; CRTEXT=1 ; fi
+  if [ -f /storage/certs/${SEARCHDOMAIN}.pem ]; then CERT=1 ; CRTEXT=2 ; fi
 }
 
 nginxconfig() {
-  echo "Tweaking nginx config for certs ${DOMAIN}"
-  if [ ${CRTEXT} -eq 1 ]; then sed -r -i "s/_SSLMARKER1_/ssl_certificate \/storage\/certs\/${DOMAIN}.crt/g" /etc/nginx/sites-enabled/default ; fi
-  if [ ${CRTEXT} -eq 2 ]; then sed -r -i "s/_SSLMARKER1_/ssl_certificate \/storage\/certs\/${DOMAIN}.pem/g" /etc/nginx/sites-enabled/default ; fi
-  sed -r -i "s/_SSLMARKER2_/ssl_certificate_key \/storage\/certs\/${DOMAIN}.key/g" /etc/nginx/sites-enabled/default
+  echo "Tweaking nginx config for certs ${SEARCHDOMAIN}"
+  if [ ${CRTEXT} -eq 1 ]; then sed -r -i "s/_SSLMARKER1_/ssl_certificate \/storage\/certs\/${SEARCHDOMAIN}.crt/g" /etc/nginx/sites-enabled/default ; fi
+  if [ ${CRTEXT} -eq 2 ]; then sed -r -i "s/_SSLMARKER1_/ssl_certificate \/storage\/certs\/${SEARCHDOMAIN}.pem/g" /etc/nginx/sites-enabled/default ; fi
+  sed -r -i "s/_SSLMARKER2_/ssl_certificate_key \/storage\/certs\/${SEARCHDOMAIN}.key/g" /etc/nginx/sites-enabled/default
 }
 
 DOMAIN="${WWWDOMAIN}"
@@ -21,6 +23,16 @@ if [ -z "$DOMAIN" ]; then
   echo "\$WWWDOMAIN not specified.  Check ENV var?"
   exit 1
 fi
+
+#Are we looking for a wildcard cert?
+if [ "${WILDCARDCERT}" -eq 1 ]; then 
+  WSDOMAIN=$( echo "${DOMAIN}" | cut -d\. -f 2- | tr '\.' '_' )
+  SEARCHDOMAIN="STAR_${WSDOMAIN}"
+else
+  SEARCHDOMAIN="${DOMAIN}"
+fi
+
+
 
 #Do we have a cert in place already?
 KEY=0

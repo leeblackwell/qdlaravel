@@ -3,29 +3,48 @@
 source /root/bash-functions.sh
 envcheck
 
-
-
 APPBASEDIR="/var/www/html"
-if [ -f ${APPBASEDIR}/BIND-MARKER ]; then 
-    echo "Bind mount present on ${APPBASEDIR}"
-else
-    echo "Bind mount missing (${APPBASEDIR}); abort."
+CERTSDIR="/var/www/html"
+
+#Bind mount check
+#Check bind mounts are in place
+MOUNTSPRESENTANDCORRECT=1
+for CHKDIR in ${APPBASEDIR} ${CERTSDIR}
+do 
+    MOUNTED=$( grep -E -v "(\/proc|\/etc)|^(devpts|tmpfs|cgroup|sysfs|mqueue|shm|overlay)" /etc/mtab )
+    echo "${MOUNTED}" | grep -E "${CHKDIR}"
+    RES=$?
+    if [ "${RES}" -eq 0 ]; then
+        echo "Bind mount present on ${CHKDIR}"
+    else
+        echo "Bind mount missing (${CHKDIR})"
+        MOUNTSPRESENTANDCORRECT=0
+    fi
+done
+
+if [ ${MOUNTSPRESENTANDCORRECT} -ne 1 ]; then
     exit 1
 fi
 
-CERTSDIR="/var/www/html"
-if [ -f ${CERTSDIR}/BIND-MARKER ]; then 
-    echo "Bind mount present on ${CERTSDIR}"
-else
-    echo "Bind mount missing (${CERTSDIR}); abort."
-    exit 1
-fi
 
 #PHPVER=$( apt list --installed | egrep "^php[0-9]\.[0-9]\/" | sed -r 's/php([0-9]{1}\.[0-9]{1}).*/\1/g' )
 PHPVER=$( cat /root/php-version )
 
-chmod -R 777 /storage/app/*/storage/framework/sessions
-chmod -R 777 /storage/app/*/storage/logs
+#Force perms
+#chgrp -R www-data /storage/app
+#chmod -R g+w /storage/app
+
+#Not ideal, I know, but sort useful for local development... 
+#chmod -R o+w /storage/app
+
+#set umask so that permissions on session files are correct
+# {
+# umask 012
+# } | tee -a /etc/profile
+chmod -R 777 /storage/app/mcc/storage/framework/sessions
+chmod -R 777 /storage/app/mcc/storage/logs
+
+echo "****************** HTACCESS IS HERE ${HTACCESS}"
 
 #Nginx config
 {
@@ -65,9 +84,9 @@ echo '          }'
 echo '}'
 } | tee -a /etc/nginx/sites-enabled/default
 
-
+echo "Setting up /var/www/.htpasswd with user ${HTUSER} and pass ${HTPASS}"
 {
-        echo "mypassword" | htpasswd -i -c /var/www/.htpasswd mylogin
+        echo "${HTPASS}" | htpasswd -i -c /var/www/.htpasswd ${HTUSER}
 } | tee /var/www/.htpasswd
 chown www-data /var/www/.htpasswd
 chmod 750 /var/www/.htpasswd 
@@ -77,6 +96,8 @@ chmod 750 /var/www/.htpasswd
 
 evalcommand "/etc/init.d/php${PHPVER}-fpm start" 1
 evalcommand "/etc/init.d/nginx start" 1
+
+cat -n /etc/nginx/sites-enabled/default
 
 #Loop until something dies or is killed 
 LOOPIT=1

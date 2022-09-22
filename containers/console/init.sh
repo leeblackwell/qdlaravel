@@ -1,7 +1,7 @@
 #!/bin/bash -x
 
 usercreate() {
-    useradd -m -s /bin/bash -u ${HOSTUID} containeruser
+    useradd -o -m -s /bin/bash -u ${HOSTUID} containeruser
     RES=$?
     if [ "${RES}" -ne 0 ]; then 
         echo "failed to create containeruser for UID ${HOSTUID}"
@@ -67,26 +67,74 @@ mkdir /home/containeruser/bin
 {
     echo '#!/bin/bash'
     echo 'sudo chown -R containeruser:www-data /storage/app'
-    echo 'sudo chmod 770 /storage/app'
+    echo 'sudo chmod -R 770 /storage/app'
 } > /home/containeruser/bin/fixpermissions.sh
 chown containeruser:containeruser /home/containeruser/bin/fixpermissions.sh
 chmod 755 /home/containeruser/bin/fixpermissions.sh
 
 {
     echo '#!/bin/bash'
-    echo 'cd /storage/app/public'
+    echo "cd /storage/app/${APPNAME}"
     echo 'npm install'
     echo 'npm run dev'    
 } > /home/containeruser/bin/npmmagic.sh
 chown containeruser:containeruser /home/containeruser/bin/npmmagic.sh
 chmod 755 /home/containeruser/bin/npmmagic.sh
 
+{
+    echo '#!/bin/bash'
+    echo "cd /storage/app/${APPNAME}"
+    echo 'composer install'
+} > /home/containeruser/bin/composerinstall.sh
+chown containeruser:containeruser /home/containeruser/bin/composerinstall.sh
+chmod 755 /home/containeruser/bin/composerinstall.sh
+
+{
+    echo '#!/bin/bash'
+    echo "cd /storage/app/${APPNAME}"
+    echo 'if [ ! -f .env ]; then'
+    echo '  cp -p .env.example .env'
+    echo "  sed -r -i 's/APP_NAME=.*/APP_NAME=\"My Complete Coach\"/g' .env"
+    echo "  sed -r -i 's/DB_CONNECTION.*/DB_CONNECTION=mysql/g' .env"
+    echo "  sed -r -i 's/DB_HOST.*/DB_HOST=${APPNAME}-db/g' .env"
+    echo "  sed -r -i 's/DB_PORT.*/DB_PORT=3306/g' .env"
+    echo "  sed -r -i 's/DB_DATABASE.*/DB_DATABASE=${DATABASENAME}/g' .env"
+    echo "  sed -r -i 's/DB_USERNAME.*/DB_USERNAME=${DATABASEUSER}/g' .env"
+    echo "  sed -r -i 's/DB_PASSWORD.*/DB_PASSWORD=secret/g' .env"
+    echo "  sed -r -i 's/MAIL_DRIVER.*/MAIL_DRIVER=smtp/g' .env"
+    echo "  sed -r -i 's/MAIL_HOST.*/MAIL_HOST=maildev/g' .env"
+    echo "  sed -r -i 's/MAIL_PORT.*/MAIL_PORT=25/g' .env"
+    echo "  sed -r -i 's/MAIL_USERNAME.*/MAIL_USERNAME=null/g' .env"
+    echo "  sed -r -i 's/MAIL_PASSWORD.*/MAIL_PASSWORD=null/g' .env"
+    echo "  sed -r -i 's/MAIL_ENCRYPTION.*/MAIL_ENCRYPTION=null/g' .env"
+    echo '  ./artisan key:generate'
+    echo 'fi'
+} > /home/containeruser/bin/envfix.sh
+chown containeruser:containeruser /home/containeruser/bin/envfix.sh
+chmod 755 /home/containeruser/bin/envfix.sh
+
 #Bootstrap/cleanup stuff
+linebar
+echo "Fixing permissions"
 sudo su -c /home/containeruser/bin/fixpermissions.sh containeruser
+
+linebar
+echo "Casting spells for NPM magic"
 sudo su -c /home/containeruser/bin/npmmagic.sh containeruser
+
+linebar
+echo "Chatting to Composer about package installs"
+sudo su -c /home/containeruser/bin/composerinstall.sh containeruser
+
+linebar
+echo "Sorting out .env"
+sudo su -c /home/containeruser/bin/envfix.sh containeruser
 
 #Set console user to the 'correct' user by default
 echo "sudo su - -c /bin/bash containeruser" | tee -a ~/.bashrc
+
+linebar
+echo "WE ARE READY TO RUUUUUUMMMMMBBBBBLLLLLLEEEEEEEEEE"
 
 #enter forever loop
 while true

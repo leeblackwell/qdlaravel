@@ -3,6 +3,9 @@ FROM ubuntu:focal
 
 MAINTAINER lee@leeblackwell.com
 
+ENV DATABASENAME ${DATABASENAME}
+ENV DATABASEUSER ${DATABASEUSER}
+
 COPY common/* mysql/configure* mysql/init.sh /root/
 
 RUN /root/configure.sh
