@@ -26,13 +26,18 @@ services:
       - "${BINDHTTPS}"
     container_name: ${APPNAME:?err}-web
     environment:
+      - APPNAME
       - WILDCARDCERT
       - WWWDOMAIN
       - HTACCESS
+      - HTUSER
+      - HTPASS
       - ENVSET
       - HOSTUID
       - HOSTGID
       - NODEVERSION
+      - DATABASENAME
+      - DATABASEUSER
     volumes:
       - ./storage/app:/storage/app
       - ./storage/certs:/storage/certs
@@ -64,11 +69,13 @@ services:
       - ENVSET
       - HOSTUID
       - HOSTGID
+      - DATABASENAME
+      - DATABASEUSER
     volumes:
       - ./storage/database:/mysql
   
   maildev:
-    container_name: mcc_maildev
+    container_name: ${APPNAME:?err}_maildev
     image: maildev/maildev
     ports:
       - "1080:80"

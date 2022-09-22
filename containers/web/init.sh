@@ -41,10 +41,8 @@ PHPVER=$( cat /root/php-version )
 # {
 # umask 012
 # } | tee -a /etc/profile
-chmod -R 777 /storage/app/mcc/storage/framework/sessions
-chmod -R 777 /storage/app/mcc/storage/logs
-
-echo "****************** HTACCESS IS HERE ${HTACCESS}"
+chmod -R 777 /storage/app/${APPNAME}/storage/framework/sessions
+chmod -R 777 /storage/app/${APPNAME}/storage/logs
 
 #Nginx config
 {
@@ -67,7 +65,6 @@ if [ ${HTACCESS} -gt 0 ]; then
     } | tee -a /etc/nginx/sites-enabled/default
 fi
 
-
 {
 echo '          location / {'
 echo '              try_files $uri $uri/ /index.php?$query_string;'
@@ -84,7 +81,7 @@ echo '          }'
 echo '}'
 } | tee -a /etc/nginx/sites-enabled/default
 
-echo "Setting up /var/www/.htpasswd with user ${HTUSER} and pass ${HTPASS}"
+echo "Setting up /var/www/.htpasswd with user ${HTUSER} and pass ${HTPASS}, \${HTACCESS} is ${HTACCESS}"
 {
         echo "${HTPASS}" | htpasswd -i -c /var/www/.htpasswd ${HTUSER}
 } | tee /var/www/.htpasswd
