@@ -16,6 +16,8 @@ services:
       - ./storage/app:/storage/app
       - ./storage/database:/storage/database
       - ./storage/certs:/storage/certs
+    networks:
+      - ${APPNAME:?err}-console
     
   web:
     build:
@@ -43,6 +45,8 @@ services:
       - ./storage/certs:/storage/certs
       - ./storage/app:/var/www/html
       - ./storage/logs/nginx:/var/log/nginx
+    networks:
+      - ${APPNAME:?err}-console
     depends_on:
       - console
 
@@ -57,6 +61,8 @@ services:
       - ENVSET
       - HOSTUID
       - HOSTGID
+    networks:
+      - ${APPNAME:?err}-console
 
   db:
     build:
@@ -73,11 +79,17 @@ services:
       - DATABASEUSER
     volumes:
       - ./storage/database:/mysql
+    networks:
+      - ${APPNAME:?err}-console
   
   maildev:
     container_name: ${APPNAME:?err}_maildev
     image: maildev/maildev
     ports:
       - "1080:80"
+    networks:
+      - ${APPNAME:?err}-console
 
 
+networks:
+  ${APPNAME:?err}-console:
